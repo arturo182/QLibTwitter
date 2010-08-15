@@ -12,10 +12,10 @@ SOURCES    += main.cpp \
               ../src/TwitOAvis.cpp \
               ../src/OAvis/OAvisUtil.cpp \
               ../src/OAvis/OAvisToken.cpp \
-              ../src/OAvis/OAvisSignaturePlainText.cpp \
               ../src/OAvis/OAvisSignatureHMAC.cpp \
               ../src/OAvis/OAvisRequest.cpp \
-              ../src/OAvis/OAvisConsumer.cpp
+              ../src/OAvis/OAvisConsumer.cpp \
+    Test.cpp
 
 HEADERS    += ../src/TwitOAvis.h \
               ../src/OAvis/OAvisUtil.h \
@@ -25,4 +25,5 @@ HEADERS    += ../src/TwitOAvis.h \
               ../src/OAvis/OAvisSignature.h \
               ../src/OAvis/OAvisRequest.h \
               ../src/OAvis/OAvisConsumer.h \
-              ../src/OAvis/OAvisCommon.h
+              ../src/OAvis/OAvisCommon.h \
+    Test.h
