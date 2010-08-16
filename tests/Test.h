@@ -1,5 +1,5 @@
 /**
-  * TwitOAvis
+  * QLibTwitter
   * Copyright (c) 2010 arturo182 <arturo182@tlen.pl>
   * All rights reserved
   *
@@ -9,7 +9,7 @@
 #ifndef TEST_H
 #define TEST_H
 
-#include "TwitOAvisCore.h"
+#include "QLibTwitterCore.h"
 
 class Test: public QObject
 {
@@ -21,12 +21,12 @@ class Test: public QObject
   signals:
 
   public slots:
-    void slotGotRequestToken(OAvis::Token *token);
-    void slotGotAccessToken(OAvis::Token *token);
-    void slotGotResponse(TwitOAvis::Response *resp);
+    void slotGotRequestToken(QLibOA::Token *token);
+    void slotGotAccessToken(QLibOA::Token *token);
+    void slotGotResponse(QLibTwitter::Response *resp);
 
   private:
-    TwitOAvis::Core *m_lib;
+    QLibTwitter::Core *m_lib;
 
 };
 

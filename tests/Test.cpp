@@ -1,5 +1,5 @@
 /**
-  * TwitOAvis
+  * QLibTwitter
   * Copyright (c) 2010 arturo182 <arturo182@tlen.pl>
   * All rights reserved
   *
@@ -10,24 +10,24 @@
 
 Test::Test(QObject *parent): QObject(parent)
 {
-  m_lib = new TwitOAvis::Core("vP69u6PGSakKTIoE2ApvVw", "g2PjaAttF0prUfmMTSlzVe9Dr7LBqCGcJXlWwhlwA", "15699469-7Vcdc62ym4blRrHgCRjKCYaDBYoVDhAIlubUPmg", "NM0X0rXn4imPw0hm4MoQGe5tcYIZBxqbyfXSxykvNg");
+  m_lib = new QLibTwitter::Core("vP69u6PGSakKTIoE2ApvVw", "g2PjaAttF0prUfmMTSlzVe9Dr7LBqCGcJXlWwhlwA", "15699469-7Vcdc62ym4blRrHgCRjKCYaDBYoVDhAIlubUPmg", "NM0X0rXn4imPw0hm4MoQGe5tcYIZBxqbyfXSxykvNg");
 
-  connect(m_lib, SIGNAL(signalRequestToken(OAvis::Token*)), this, SLOT(slotGotRequestToken(OAvis::Token*)));
-  connect(m_lib, SIGNAL(signalAccessToken(OAvis::Token*)), this, SLOT(slotGotAccessToken(OAvis::Token*)));
-  connect(m_lib, SIGNAL(signalResponseReceived(TwitOAvis::Response*)), this, SLOT(slotGotResponse(TwitOAvis::Response*)));
+  connect(m_lib, SIGNAL(signalRequestToken(QLibOA::Token*)), this, SLOT(slotGotRequestToken(QLibOA::Token*)));
+  connect(m_lib, SIGNAL(signalAccessToken(QLibOA::Token*)), this, SLOT(slotGotAccessToken(QLibOA::Token*)));
+  connect(m_lib, SIGNAL(signalResponseReceived(QLibTwitter::Response*)), this, SLOT(slotGotResponse(QLibTwitter::Response*)));
 
-  OAvis::ParamMap params;
+  QLibOA::ParamMap params;
 
   //m_lib->slotRequestToken();
 
   params.insert("count", "200");
-  m_lib->slotMakeRequest("statuses/friends_timeline", OAvis::GET, params);
+  m_lib->slotMakeRequest("statuses/friends_timeline", QLibOA::GET, params);
 
   //params.insert("status", "Hello world 3!");
-  //m_lib->slotMakeRequest("statuses/update", OAvis::POST, params);
+  //m_lib->slotMakeRequest("statuses/update", QLibOA::POST, params);
 }
 
-void Test::slotGotRequestToken(OAvis::Token *token)
+void Test::slotGotRequestToken(QLibOA::Token *token)
 {
   m_lib->setToken(token);
 
@@ -38,19 +38,19 @@ void Test::slotGotRequestToken(OAvis::Token *token)
   m_lib->slotAccessToken(pin);
 }
 
-void Test::slotGotAccessToken(OAvis::Token *token)
+void Test::slotGotAccessToken(QLibOA::Token *token)
 {
   m_lib->setToken(token);
   //token->debug();
   //m_lib->slotMakeRequest("statuses/friends_timeline");
 }
 
-void Test::slotGotResponse(TwitOAvis::Response *resp)
+void Test::slotGotResponse(QLibTwitter::Response *resp)
 {
   switch(resp->getType()) {
-    case TwitOAvis::FRIENDS_TIMELINE:
+    case QLibTwitter::FRIENDS_TIMELINE:
     {
-      TwitOAvis::RespFriendsTimeline *r = static_cast<TwitOAvis::RespFriendsTimeline*>(resp);
+      QLibTwitter::RespFriendsTimeline *r = static_cast<QLibTwitter::RespFriendsTimeline*>(resp);
 
       for(int i = 0; i < r->list.count(); i++) {
         qDebug() << r->list.at(i)->user.screenName << "wrote" << r->list.at(i)->text << "at" << r->list.at(i)->createdAt.toString("dd.MM.yyyy hh:mm:ss");
@@ -60,9 +60,9 @@ void Test::slotGotResponse(TwitOAvis::Response *resp)
     }
     break;
 
-    case TwitOAvis::STATUS_UPDATE:
+    case QLibTwitter::STATUS_UPDATE:
     {
-      TwitOAvis::RespStatusUpdate *r = static_cast<TwitOAvis::RespStatusUpdate*>(resp);
+      QLibTwitter::RespStatusUpdate *r = static_cast<QLibTwitter::RespStatusUpdate*>(resp);
 
       qDebug() << *r->status;
 
@@ -70,9 +70,9 @@ void Test::slotGotResponse(TwitOAvis::Response *resp)
     }
     break;
 
-    case TwitOAvis::PUBLIC_TIMELINE:
+    case QLibTwitter::PUBLIC_TIMELINE:
     {
-      TwitOAvis::RespFriendsTimeline *r = static_cast<TwitOAvis::RespFriendsTimeline*>(resp);
+      QLibTwitter::RespFriendsTimeline *r = static_cast<QLibTwitter::RespFriendsTimeline*>(resp);
 
       qDebug() << r->list.count();
 
