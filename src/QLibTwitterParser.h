@@ -23,8 +23,14 @@ namespace QLibTwitter
     public:
       explicit Parser(QObject *parent = 0): QObject(parent) { }
 
-      static RespFriendsTimeline *FriendsTimeline(QString xml);
-      static RespPublicTimeline *PublicTimeline(QString xml);
+      static RespTimeline *FriendsTimeline(QString xml);
+      static RespTimeline *PublicTimeline(QString xml);
+      static RespTimeline *UserTimeline(QString xml);
+      static RespTimeline *HomeTimeline(QString xml);
+      static RespTimeline *Mentions(QString xml);
+
+      static RespRateLimit *RateLimit(QString xml);
+
       static RespStatusUpdate *StatusUpdate(QString xml);
 
       static QList<elStatus*> getStatusList(QString xml);

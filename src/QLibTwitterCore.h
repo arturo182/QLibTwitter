@@ -33,6 +33,17 @@ namespace QLibTwitter
 
       void setToken(QLibOA::Token *token) { if(m_token) { delete m_token; } m_token = token; }
 
+      void getFriendsTimeline(QLibOA::ParamMap params = QLibOA::ParamMap());
+      void getPublicTimeline(QLibOA::ParamMap params = QLibOA::ParamMap());
+      void getUserTimeline(QString screenName, QLibOA::ParamMap params = QLibOA::ParamMap());
+      void getUserTimeline(int id, QLibOA::ParamMap params = QLibOA::ParamMap());
+      void getHomeTimeline(QLibOA::ParamMap params = QLibOA::ParamMap());
+      void getMentions(QLibOA::ParamMap params = QLibOA::ParamMap());
+
+      void getRateLimit();
+
+      void sendStatusUpdate(QString status, QLibOA::ParamMap params = QLibOA::ParamMap());
+
     signals:
       void signalResponseReceived(QLibTwitter::Response *resp);
       void signalRequestToken(QLibOA::Token *token);
@@ -41,10 +52,9 @@ namespace QLibTwitter
     public slots:
       void slotRequestToken();
       void slotAccessToken(QString verifier = QString::null);
-      void slotMakeRequest(QString url, QLibOA::HttpMethod method = QLibOA::GET, QLibOA::ParamMap params = QLibOA::ParamMap());
 
     private slots:
-      void slotMakeRequestFull(QString url, QLibOA::HttpMethod method = QLibOA::GET, QLibOA::ParamMap params = QLibOA::ParamMap());
+      void slotMakeRequest(QString url, QLibOA::HttpMethod method = QLibOA::GET, QLibOA::ParamMap params = QLibOA::ParamMap());
       void slotReplyFinished(QNetworkReply *reply);
 
     private:

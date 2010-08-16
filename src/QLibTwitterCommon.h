@@ -25,7 +25,11 @@ namespace QLibTwitter
   {
     FRIENDS_TIMELINE = 0,
     STATUS_UPDATE,
-    PUBLIC_TIMELINE
+    PUBLIC_TIMELINE,
+    USER_TIMELINE,
+    HOME_TIMELINE,
+    MENTIONS,
+    RATE_LIMIT
   };
 
   struct elUser
@@ -89,13 +93,6 @@ namespace QLibTwitter
       RequestType m_type;
   };
 
-  class RespFriendsTimeline: public Response
-  {
-    public:
-      RespFriendsTimeline(): Response(FRIENDS_TIMELINE) {  }
-      QList<elStatus*> list;
-  };
-
   class RespStatusUpdate: public Response
   {
     public:
@@ -104,11 +101,21 @@ namespace QLibTwitter
       elStatus *status;
   };
 
-  class RespPublicTimeline: public Response
+  class RespTimeline: public Response
   {
     public:
-      RespPublicTimeline(): Response(PUBLIC_TIMELINE) {  }
+      RespTimeline(RequestType type): Response(type) {  }
       QList<elStatus*> list;
+  };
+
+  class RespRateLimit: public Response
+  {
+    public:
+      RespRateLimit(): Response(RATE_LIMIT) { }
+      int remainingHits;
+      int hourlyLimit;
+      int resetTimeSec;
+      QDateTime resetTime;
   };
 
   inline QDebug operator<<(QDebug debug, const elStatus status)

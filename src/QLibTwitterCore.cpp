@@ -48,7 +48,7 @@ QString Core::getFormat()
 
 void Core::slotRequestToken()
 {
-  slotMakeRequestFull("https://api.twitter.com/oauth/request_token", QLibOA::POST);
+  slotMakeRequest("https://api.twitter.com/oauth/request_token", QLibOA::POST);
 }
 
 void Core::slotAccessToken(QString verifier)
@@ -58,19 +58,71 @@ void Core::slotAccessToken(QString verifier)
     params.insert("oauth_verifier", verifier);
   }
 
-  slotMakeRequestFull("https://api.twitter.com/oauth/access_token", QLibOA::POST, params);
+  slotMakeRequest("https://api.twitter.com/oauth/access_token", QLibOA::POST, params);
+}
+
+void Core::getFriendsTimeline(QLibOA::ParamMap params)
+{
+  QString url = getHost() + "statuses/friends_timeline." + getFormat();
+  slotMakeRequest(url, QLibOA::GET, params);
+}
+
+void Core::getPublicTimeline(QLibOA::ParamMap params)
+{
+  QString url = getHost() + "statuses/public_timeline." + getFormat();
+  slotMakeRequest(url, QLibOA::GET, params);
+}
+
+void Core::getUserTimeline(QString screenName, QLibOA::ParamMap params)
+{
+  if(!params.contains("screen_name")) {
+    params.insert("screen_name", screenName);
+  }
+
+  QString url = getHost() + "statuses/user_timeline." + getFormat();
+  slotMakeRequest(url, QLibOA::GET, params);
+}
+
+void Core::getUserTimeline(int id, QLibOA::ParamMap params)
+{
+  if(!params.contains("user_id")) {
+    params.insert("user_id", QString::number(id));
+  }
+
+  QString url = getHost() + "statuses/user_timeline." + getFormat();
+  slotMakeRequest(url, QLibOA::GET, params);
+}
+
+void Core::getHomeTimeline(QLibOA::ParamMap params)
+{
+  QString url = getHost() + "statuses/home_timeline." + getFormat();
+  slotMakeRequest(url, QLibOA::GET, params);
+}
+
+void Core::getMentions(QLibOA::ParamMap params)
+{
+  QString url = getHost() + "statuses/mentions." + getFormat();
+  slotMakeRequest(url, QLibOA::GET, params);
+}
+
+void Core::getRateLimit()
+{
+  QString url = getHost() + "account/rate_limit_status." + getFormat();
+  slotMakeRequest(url, QLibOA::GET);
+}
+
+void Core::sendStatusUpdate(QString status, QLibOA::ParamMap params)
+{
+  if(!params.contains("status")) {
+    params.insert("status", status);
+  }
+
+  QString url = getHost() + "statuses/update." + getFormat();
+
+  slotMakeRequest(url, QLibOA::POST, params);
 }
 
 void Core::slotMakeRequest(QString url, QLibOA::HttpMethod method, QLibOA::ParamMap params)
-{
-  url.prepend(getHost());
-  url.append(".");
-  url.append(getFormat());
-
-  slotMakeRequestFull(url, method, params);
-}
-
-void Core::slotMakeRequestFull(QString url, QLibOA::HttpMethod method, QLibOA::ParamMap params)
 {
   QNetworkReply *reply = 0;
   QNetworkRequest req;
@@ -78,11 +130,12 @@ void Core::slotMakeRequestFull(QString url, QLibOA::HttpMethod method, QLibOA::P
   QLibOA::Request *oReq = QLibOA::Request::fromConsumerAndToken(m_consumer, m_token, method, url, params);
   oReq->sign(QLibOA::HMAC_SHA1, m_consumer, m_token);
 
-  req.setUrl(oReq->getNormalizedUrl());
-
   switch(method) {
     case QLibOA::GET:
     {
+      req.setUrl(oReq->toUrl());
+      qDebug() << oReq->toUrl() << "\n";
+
       req.setRawHeader("Authorization", oReq->toHeader().toAscii());
       reply = m_netMgr->get(req);
     }
@@ -90,6 +143,7 @@ void Core::slotMakeRequestFull(QString url, QLibOA::HttpMethod method, QLibOA::P
 
     case QLibOA::POST:
     {
+      req.setUrl(oReq->getNormalizedUrl());
       reply = m_netMgr->post(req, oReq->toPostdata().toAscii());
     }
     break;
@@ -116,13 +170,25 @@ void Core::slotReplyFinished(QNetworkReply *reply)
         QLibOA::Token *token = QLibOA::Token::fromString(data);
         emit signalAccessToken(token);
       } else if(reply->url().toString().indexOf("statuses/friends_timeline") > -1) {
-        RespFriendsTimeline *resp = Parser::FriendsTimeline(data);
+        RespTimeline *resp = Parser::FriendsTimeline(data);
         emit signalResponseReceived(resp);
       } else if(reply->url().toString().indexOf("statuses/update") > -1) {
         RespStatusUpdate *resp = Parser::StatusUpdate(data);
         emit signalResponseReceived(resp);
       } else if(reply->url().toString().indexOf("statuses/public_timeline") > -1) {
-        RespPublicTimeline *resp = Parser::PublicTimeline(data);
+        RespTimeline *resp = Parser::PublicTimeline(data);
+        emit signalResponseReceived(resp);
+      } else if(reply->url().toString().indexOf("statuses/user_timeline") > -1) {
+        RespTimeline *resp = Parser::UserTimeline(data);
+        emit signalResponseReceived(resp);
+      } else if(reply->url().toString().indexOf("statuses/home_timeline") > -1) {
+        RespTimeline *resp = Parser::HomeTimeline(data);
+        emit signalResponseReceived(resp);
+      } else if(reply->url().toString().indexOf("statuses/mentions") > -1) {
+        RespTimeline *resp = Parser::Mentions(data);
+        emit signalResponseReceived(resp);
+      } else if(reply->url().toString().indexOf("account/rate_limit_status") > -1) {
+        RespRateLimit *resp = Parser::RateLimit(data);
         emit signalResponseReceived(resp);
       }
     }

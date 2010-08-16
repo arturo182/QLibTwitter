@@ -16,15 +16,15 @@ Test::Test(QObject *parent): QObject(parent)
   connect(m_lib, SIGNAL(signalAccessToken(QLibOA::Token*)), this, SLOT(slotGotAccessToken(QLibOA::Token*)));
   connect(m_lib, SIGNAL(signalResponseReceived(QLibTwitter::Response*)), this, SLOT(slotGotResponse(QLibTwitter::Response*)));
 
-  QLibOA::ParamMap params;
-
   //m_lib->slotRequestToken();
-
-  params.insert("count", "200");
-  m_lib->slotMakeRequest("statuses/friends_timeline", QLibOA::GET, params);
-
-  //params.insert("status", "Hello world 3!");
-  //m_lib->slotMakeRequest("statuses/update", QLibOA::POST, params);
+  //QLibOA::ParamMap params;
+  //m_lib->getFriendsTimeline();
+  //m_lib->getPublicTimeline();
+  //m_lib->getHomeTimeline();
+  //m_lib->getMentions();
+  m_lib->getRateLimit();
+  //m_lib->getUserTimeline("a3ridah");
+  //m_lib->sendStatusUpdate("Hi world!");
 }
 
 void Test::slotGotRequestToken(QLibOA::Token *token)
@@ -41,8 +41,6 @@ void Test::slotGotRequestToken(QLibOA::Token *token)
 void Test::slotGotAccessToken(QLibOA::Token *token)
 {
   m_lib->setToken(token);
-  //token->debug();
-  //m_lib->slotMakeRequest("statuses/friends_timeline");
 }
 
 void Test::slotGotResponse(QLibTwitter::Response *resp)
@@ -50,7 +48,7 @@ void Test::slotGotResponse(QLibTwitter::Response *resp)
   switch(resp->getType()) {
     case QLibTwitter::FRIENDS_TIMELINE:
     {
-      QLibTwitter::RespFriendsTimeline *r = static_cast<QLibTwitter::RespFriendsTimeline*>(resp);
+      QLibTwitter::RespTimeline *r = static_cast<QLibTwitter::RespTimeline*>(resp);
 
       for(int i = 0; i < r->list.count(); i++) {
         qDebug() << r->list.at(i)->user.screenName << "wrote" << r->list.at(i)->text << "at" << r->list.at(i)->createdAt.toString("dd.MM.yyyy hh:mm:ss");
@@ -72,9 +70,60 @@ void Test::slotGotResponse(QLibTwitter::Response *resp)
 
     case QLibTwitter::PUBLIC_TIMELINE:
     {
-      QLibTwitter::RespFriendsTimeline *r = static_cast<QLibTwitter::RespFriendsTimeline*>(resp);
+      QLibTwitter::RespTimeline *r = static_cast<QLibTwitter::RespTimeline*>(resp);
 
-      qDebug() << r->list.count();
+      for(int i = 0; i < r->list.count(); i++) {
+        qDebug() << r->list.at(i)->user.screenName << "wrote" << r->list.at(i)->text << "at" << r->list.at(i)->createdAt.toString("dd.MM.yyyy hh:mm:ss");
+      }
+
+      delete r;
+    }
+    break;
+
+    case QLibTwitter::USER_TIMELINE:
+    {
+      QLibTwitter::RespTimeline *r = static_cast<QLibTwitter::RespTimeline*>(resp);
+
+      for(int i = 0; i < r->list.count(); i++) {
+        qDebug() << r->list.at(i)->user.screenName << "wrote" << r->list.at(i)->text << "at" << r->list.at(i)->createdAt.toString("dd.MM.yyyy hh:mm:ss");
+      }
+
+      delete r;
+    }
+    break;
+
+    case QLibTwitter::HOME_TIMELINE:
+    {
+      QLibTwitter::RespTimeline *r = static_cast<QLibTwitter::RespTimeline*>(resp);
+
+      for(int i = 0; i < r->list.count(); i++) {
+        qDebug() << r->list.at(i)->user.screenName << "wrote" << r->list.at(i)->text << "at" << r->list.at(i)->createdAt.toString("dd.MM.yyyy hh:mm:ss");
+      }
+
+      delete r;
+    }
+    break;
+
+    case QLibTwitter::MENTIONS:
+    {
+      QLibTwitter::RespTimeline *r = static_cast<QLibTwitter::RespTimeline*>(resp);
+
+      for(int i = 0; i < r->list.count(); i++) {
+        qDebug() << r->list.at(i)->user.screenName << "wrote" << r->list.at(i)->text << "at" << r->list.at(i)->createdAt.toString("dd.MM.yyyy hh:mm:ss");
+      }
+
+      delete r;
+    }
+    break;
+
+    case QLibTwitter::RATE_LIMIT:
+    {
+      QLibTwitter::RespRateLimit *r = static_cast<QLibTwitter::RespRateLimit*>(resp);
+
+      qDebug() << "hourlyLimit =" << r->hourlyLimit;
+      qDebug() << "remainingHits =" << r->remainingHits;
+      qDebug() << "resetTime =" << r->resetTime;
+      qDebug() << "resetTimeSec =" << r->resetTimeSec;
 
       delete r;
     }
