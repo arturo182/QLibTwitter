@@ -1,4 +1,4 @@
-QT         += core network
+QT         += core network xml
 QT         -= gui
 
 TARGET      = TwitOAvis
@@ -9,15 +9,17 @@ INCLUDEPATH = ../src
 DEPENDPATH  = ../lib
 
 SOURCES    += main.cpp \
-              ../src/TwitOAvis.cpp \
+              Test.cpp \
+              ../src/TwitOAvisCore.cpp \
               ../src/OAvis/OAvisUtil.cpp \
               ../src/OAvis/OAvisToken.cpp \
               ../src/OAvis/OAvisSignatureHMAC.cpp \
               ../src/OAvis/OAvisRequest.cpp \
               ../src/OAvis/OAvisConsumer.cpp \
-    Test.cpp
+              ../src/TwitOAvisParser.cpp
 
-HEADERS    += ../src/TwitOAvis.h \
+HEADERS    += Test.h \
+              ../src/TwitOAvisCore.h \
               ../src/OAvis/OAvisUtil.h \
               ../src/OAvis/OAvisToken.h \
               ../src/OAvis/OAvisSignaturePlainText.h \
@@ -26,4 +28,5 @@ HEADERS    += ../src/TwitOAvis.h \
               ../src/OAvis/OAvisRequest.h \
               ../src/OAvis/OAvisConsumer.h \
               ../src/OAvis/OAvisCommon.h \
-    Test.h
+              ../src/TwitOAvisCommon.h \
+              ../src/TwitOAvisParser.h

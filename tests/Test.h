@@ -9,7 +9,7 @@
 #ifndef TEST_H
 #define TEST_H
 
-#include "TwitOAvis.h"
+#include "TwitOAvisCore.h"
 
 class Test: public QObject
 {
@@ -23,9 +23,10 @@ class Test: public QObject
   public slots:
     void slotGotRequestToken(OAvis::Token *token);
     void slotGotAccessToken(OAvis::Token *token);
+    void slotGotResponse(TwitOAvis::Response *resp);
 
   private:
-    TwitOAvis *m_lib;
+    TwitOAvis::Core *m_lib;
 
 };
 

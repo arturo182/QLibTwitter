@@ -6,14 +6,17 @@
   * $Id$
   */
 
-#include "TwitOAvis.h"
+#include "TwitOAvisCore.h"
+#include "TwitOAvisParser.h"
 
 #include <QtCore/QDebug>
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QAuthenticator>
 
-TwitOAvis::TwitOAvis(QString consumerKey, QString consumerSecret, QString tokenKey, QString tokenSecret): QObject(0)
+using namespace TwitOAvis;
+
+Core::Core(QString consumerKey, QString consumerSecret, QString tokenKey, QString tokenSecret): QObject(0)
 {
   m_format = XML;
   m_netMgr = new QNetworkAccessManager();
@@ -28,7 +31,7 @@ TwitOAvis::TwitOAvis(QString consumerKey, QString consumerSecret, QString tokenK
   connect(m_netMgr, SIGNAL(finished(QNetworkReply*)), this, SLOT(slotReplyFinished(QNetworkReply*)));
 }
 
-QString TwitOAvis::getFormat()
+QString Core::getFormat()
 {
   switch(m_format) {
     case JSON:
@@ -43,22 +46,31 @@ QString TwitOAvis::getFormat()
   return "";
 }
 
-void TwitOAvis::slotRequestToken()
+void Core::slotRequestToken()
 {
-  slotMakeRequest("https://api.twitter.com/oauth/request_token", OAvis::POST);
+  slotMakeRequestFull("https://api.twitter.com/oauth/request_token", OAvis::POST);
 }
 
-void TwitOAvis::slotAccessToken(QString verifier)
+void Core::slotAccessToken(QString verifier)
 {
   OAvis::ParamMap params;
   if(!verifier.isNull()) {
     params.insert("oauth_verifier", verifier);
   }
 
-  slotMakeRequest("https://api.twitter.com/oauth/access_token", OAvis::POST, params);
+  slotMakeRequestFull("https://api.twitter.com/oauth/access_token", OAvis::POST, params);
 }
 
-void TwitOAvis::slotMakeRequest(QString url, OAvis::HttpMethod method, OAvis::ParamMap params)
+void Core::slotMakeRequest(QString url, OAvis::HttpMethod method, OAvis::ParamMap params)
+{
+  url.prepend(getHost());
+  url.append(".");
+  url.append(getFormat());
+
+  slotMakeRequestFull(url, method, params);
+}
+
+void Core::slotMakeRequestFull(QString url, OAvis::HttpMethod method, OAvis::ParamMap params)
 {
   QNetworkReply *reply = 0;
   QNetworkRequest req;
@@ -66,33 +78,36 @@ void TwitOAvis::slotMakeRequest(QString url, OAvis::HttpMethod method, OAvis::Pa
   OAvis::Request *oReq = OAvis::Request::fromConsumerAndToken(m_consumer, m_token, method, url, params);
   oReq->sign(OAvis::HMAC_SHA1, m_consumer, m_token);
 
+  req.setUrl(oReq->getNormalizedUrl());
+
   switch(method) {
     case OAvis::GET:
-      //qDebug() << "GET requesting " << oReq->getNormalizedUrl() << "with header" << oReq->toHeader();
+    {
       req.setRawHeader("Authorization", oReq->toHeader().toAscii());
-
-      req.setUrl(oReq->getNormalizedUrl());
       reply = m_netMgr->get(req);
+    }
     break;
 
     case OAvis::POST:
-      //qDebug() << "POST requesting" << oReq->getNormalizedUrl() << " with data " << oReq->toPostdata();
-      req.setUrl(oReq->getNormalizedUrl());
+    {
       reply = m_netMgr->post(req, oReq->toPostdata().toAscii());
+    }
     break;
   }
 
   delete oReq;
 }
 
-void TwitOAvis::slotReplyFinished(QNetworkReply *reply)
+void Core::slotReplyFinished(QNetworkReply *reply)
 {
   if(reply->error() != QNetworkReply::NoError) {
+    QByteArray data = reply->readAll();
+
     qDebug() << reply->errorString();
+    qDebug() << "Twitter error:" << Parser::getError(data);
   } else {
     if(reply->bytesAvailable() > 0) {
       QByteArray data = reply->readAll();
-      qDebug() << data;
 
       if(reply->url().toString().indexOf("request_token") > -1) {
         OAvis::Token *token = OAvis::Token::fromString(data);
@@ -100,6 +115,15 @@ void TwitOAvis::slotReplyFinished(QNetworkReply *reply)
       } else if(reply->url().toString().indexOf("access_token") > -1) {
         OAvis::Token *token = OAvis::Token::fromString(data);
         emit signalAccessToken(token);
+      } else if(reply->url().toString().indexOf("statuses/friends_timeline") > -1) {
+        RespFriendsTimeline *resp = Parser::FriendsTimeline(data);
+        emit signalResponseReceived(resp);
+      } else if(reply->url().toString().indexOf("statuses/update") > -1) {
+        RespStatusUpdate *resp = Parser::StatusUpdate(data);
+        emit signalResponseReceived(resp);
+      } else if(reply->url().toString().indexOf("statuses/public_timeline") > -1) {
+        RespPublicTimeline *resp = Parser::PublicTimeline(data);
+        emit signalResponseReceived(resp);
       }
     }
   }
