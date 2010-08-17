@@ -31,6 +31,7 @@ namespace QLibTwitter
       QString getAuthorizeUrl(QString token) { return "https://api.twitter.com/oauth/authorize?oauth_token=" + token; }
 
       void setToken(QLibOA::Token *token) { if(m_token) { delete m_token; } m_token = token; }
+      QLibOA::Token *getToken() { return m_token; }
 
       void getFriendsTimeline(QLibOA::ParamMap params = QLibOA::ParamMap());
       void getPublicTimeline(QLibOA::ParamMap params = QLibOA::ParamMap());
