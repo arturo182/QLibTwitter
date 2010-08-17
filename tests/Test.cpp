@@ -22,7 +22,8 @@ Test::Test(QObject *parent): QObject(parent)
   //m_lib->getPublicTimeline();
   //m_lib->getHomeTimeline();
   //m_lib->getMentions();
-  m_lib->getRateLimit();
+  //m_lib->getRateLimit();
+  //m_lib->search("Inception");
   //m_lib->getUserTimeline("a3ridah");
   //m_lib->sendStatusUpdate("Hi world!");
 }

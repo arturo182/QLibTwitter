@@ -27,7 +27,6 @@ namespace QLibTwitter
       explicit Core(QString consumerKey, QString consumerSecret, QString tokenKey = QString::null, QString tokenSecret = QString::null);
 
       QString getHost() { return "https://api.twitter.com/1/"; }
-      QString getFormat();
 
       QString getAuthorizeUrl(QString token) { return "https://api.twitter.com/oauth/authorize?oauth_token=" + token; }
 
@@ -41,6 +40,7 @@ namespace QLibTwitter
       void getMentions(QLibOA::ParamMap params = QLibOA::ParamMap());
 
       void getRateLimit();
+      void search(QString query, QLibOA::ParamMap params = QLibOA::ParamMap());
 
       void sendStatusUpdate(QString status, QLibOA::ParamMap params = QLibOA::ParamMap());
 
@@ -58,7 +58,6 @@ namespace QLibTwitter
       void slotReplyFinished(QNetworkReply *reply);
 
     private:
-      DataFormat m_format;
       QLibOA::Consumer *m_consumer;
       QLibOA::Token *m_token;
       QNetworkAccessManager *m_netMgr;

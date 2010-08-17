@@ -15,12 +15,6 @@
 
 namespace QLibTwitter
 {
-  enum DataFormat
-  {
-    XML = 0,
-    JSON
-  };
-
   enum RequestType
   {
     FRIENDS_TIMELINE = 0,

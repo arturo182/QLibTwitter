@@ -18,7 +18,6 @@ using namespace QLibTwitter;
 
 Core::Core(QString consumerKey, QString consumerSecret, QString tokenKey, QString tokenSecret): QObject(0)
 {
-  m_format = XML;
   m_netMgr = new QNetworkAccessManager();
   m_consumer = new QLibOA::Consumer(consumerKey, consumerSecret);
 
@@ -29,21 +28,6 @@ Core::Core(QString consumerKey, QString consumerSecret, QString tokenKey, QStrin
   }
 
   connect(m_netMgr, SIGNAL(finished(QNetworkReply*)), this, SLOT(slotReplyFinished(QNetworkReply*)));
-}
-
-QString Core::getFormat()
-{
-  switch(m_format) {
-    case JSON:
-      return "json";
-    break;
-
-    case XML:
-      return "xml";
-    break;
-  }
-
-  return "";
 }
 
 void Core::slotRequestToken()
@@ -63,13 +47,13 @@ void Core::slotAccessToken(QString verifier)
 
 void Core::getFriendsTimeline(QLibOA::ParamMap params)
 {
-  QString url = getHost() + "statuses/friends_timeline." + getFormat();
+  QString url = getHost() + "statuses/friends_timeline.xml";
   slotMakeRequest(url, QLibOA::GET, params);
 }
 
 void Core::getPublicTimeline(QLibOA::ParamMap params)
 {
-  QString url = getHost() + "statuses/public_timeline." + getFormat();
+  QString url = getHost() + "statuses/public_timeline.xml";
   slotMakeRequest(url, QLibOA::GET, params);
 }
 
@@ -79,7 +63,7 @@ void Core::getUserTimeline(QString screenName, QLibOA::ParamMap params)
     params.insert("screen_name", screenName);
   }
 
-  QString url = getHost() + "statuses/user_timeline." + getFormat();
+  QString url = getHost() + "statuses/user_timeline.xml";
   slotMakeRequest(url, QLibOA::GET, params);
 }
 
@@ -89,25 +73,25 @@ void Core::getUserTimeline(int id, QLibOA::ParamMap params)
     params.insert("user_id", QString::number(id));
   }
 
-  QString url = getHost() + "statuses/user_timeline." + getFormat();
+  QString url = getHost() + "statuses/user_timeline.xml";
   slotMakeRequest(url, QLibOA::GET, params);
 }
 
 void Core::getHomeTimeline(QLibOA::ParamMap params)
 {
-  QString url = getHost() + "statuses/home_timeline." + getFormat();
+  QString url = getHost() + "statuses/home_timeline.xml";
   slotMakeRequest(url, QLibOA::GET, params);
 }
 
 void Core::getMentions(QLibOA::ParamMap params)
 {
-  QString url = getHost() + "statuses/mentions." + getFormat();
+  QString url = getHost() + "statuses/mentions.xml";
   slotMakeRequest(url, QLibOA::GET, params);
 }
 
 void Core::getRateLimit()
 {
-  QString url = getHost() + "account/rate_limit_status." + getFormat();
+  QString url = getHost() + "account/rate_limit_status.xml";
   slotMakeRequest(url, QLibOA::GET);
 }
 
@@ -117,14 +101,28 @@ void Core::sendStatusUpdate(QString status, QLibOA::ParamMap params)
     params.insert("status", status);
   }
 
-  QString url = getHost() + "statuses/update." + getFormat();
+  QString url = getHost() + "statuses/update.xml";
 
   slotMakeRequest(url, QLibOA::POST, params);
 }
 
+void Core::search(QString query, QLibOA::ParamMap params)
+{
+  if(!params.contains("q")) {
+    params.insert("q", query);
+  }
+
+  QNetworkRequest req;
+  QLibOA::Request *oReq = new QLibOA::Request(QLibOA::GET, "http://search.twitter.com/search.rss", params);
+
+  req.setUrl(oReq->toUrl());
+  m_netMgr->get(req);
+
+  delete oReq;
+}
+
 void Core::slotMakeRequest(QString url, QLibOA::HttpMethod method, QLibOA::ParamMap params)
 {
-  QNetworkReply *reply = 0;
   QNetworkRequest req;
 
   QLibOA::Request *oReq = QLibOA::Request::fromConsumerAndToken(m_consumer, m_token, method, url, params);
@@ -137,14 +135,14 @@ void Core::slotMakeRequest(QString url, QLibOA::HttpMethod method, QLibOA::Param
       qDebug() << oReq->toUrl() << "\n";
 
       req.setRawHeader("Authorization", oReq->toHeader().toAscii());
-      reply = m_netMgr->get(req);
+      m_netMgr->get(req);
     }
     break;
 
     case QLibOA::POST:
     {
       req.setUrl(oReq->getNormalizedUrl());
-      reply = m_netMgr->post(req, oReq->toPostdata().toAscii());
+      m_netMgr->post(req, oReq->toPostdata().toAscii());
     }
     break;
   }
@@ -190,6 +188,10 @@ void Core::slotReplyFinished(QNetworkReply *reply)
       } else if(reply->url().toString().indexOf("account/rate_limit_status") > -1) {
         RespRateLimit *resp = Parser::RateLimit(data);
         emit signalResponseReceived(resp);
+      } else if(reply->url().toString().indexOf("search") > -1) {
+        qDebug() << data;
+        //RespRateLimit *resp = Parser::RateLimit(data);
+        //emit signalResponseReceived(resp);
       }
     }
   }
