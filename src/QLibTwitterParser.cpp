@@ -124,7 +124,7 @@ QList<elStatus*> Parser::getStatusList(QString xml)
   dom.setContent(xml);
 
   QDomNodeList nodes = dom.elementsByTagName("status");
-  for(int i = 0; i < nodes.count(); i++) {
+  for(int i = nodes.count()-1; i > 0; i--) {
     elStatus *el = new elStatus();
 
     QDomNode status = nodes.at(i);
