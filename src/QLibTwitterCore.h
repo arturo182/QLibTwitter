@@ -9,7 +9,7 @@
 #ifndef TWITOAVISCORE_H
 #define TWITOAVISCORE_H
 
-#include "QLibOA/QLibOARequest.h"
+#include "QLibOA/src/QLibOARequest.h"
 #include "QLibTwitterCommon.h"
 
 #include <QtNetwork/QNetworkAccessManager>

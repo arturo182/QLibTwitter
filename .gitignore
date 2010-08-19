@@ -1,0 +1,7 @@
+
+/Makefile
+/QLibTwitter.pro.user
+/tests/Makefile*
+/tests/object_script.*
+/tests/release/*
+/tests/debug/*
