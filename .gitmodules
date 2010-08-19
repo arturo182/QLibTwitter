@@ -1,0 +1,3 @@
+[submodule "src/QLibOA"]
+	path = src/QLibOA
+	url = git@github.com:arturo182/QLibOA.git
