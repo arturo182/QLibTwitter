@@ -26,7 +26,8 @@ namespace QLibTwitter
       static RespTimeline *UserTimeline(QString xml);
       static RespTimeline *HomeTimeline(QString xml);
       static RespTimeline *Mentions(QString xml);
-
+      static RespTimeline *Favourites(QString xml);
+      
       static RespRateLimit *RateLimit(QString xml);
 
       static RespStatusUpdate *StatusUpdate(QString xml);

@@ -37,6 +37,9 @@ namespace QLibTwitter
       void getUserTimeline(int id, QLibOA::ParamMap params = QLibOA::ParamMap());
       void getHomeTimeline(QLibOA::ParamMap params = QLibOA::ParamMap());
       void getMentions(QLibOA::ParamMap params = QLibOA::ParamMap());
+      void getFavourites(QLibOA::ParamMap params = QLibOA::ParamMap());
+      void getUserFavourites(QString screenName, QLibOA::ParamMap params = QLibOA::ParamMap());
+      void getUserFavourites(int id, QLibOA::ParamMap params = QLibOA::ParamMap());
 
       void getRateLimit();
       void search(QString query, QLibOA::ParamMap params = QLibOA::ParamMap());

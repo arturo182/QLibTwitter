@@ -114,6 +114,19 @@ RespStatusUpdate *Parser::StatusUpdate(QString xml)
   return resp;
 }
 
+RespTimeline *Parser::Favourites(QString xml)
+{
+  RespTimeline *resp = NULL;
+  QList<elStatus*> list = getStatusList(xml);
+
+  if(!list.isEmpty()) {
+    resp = new RespTimeline(FAVOURITES);
+    resp->list = list;
+  }
+
+  return resp;
+}
+
 QList<elStatus*> Parser::getStatusList(QString xml)
 {
   QList<elStatus*> list;

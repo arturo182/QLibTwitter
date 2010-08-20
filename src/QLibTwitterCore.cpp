@@ -87,6 +87,23 @@ void Core::getMentions(QLibOA::ParamMap params)
   slotMakeRequest(url, QLibOA::GET, params);
 }
 
+void Core::getFavourites(QLibOA::ParamMap params)
+{
+  QString url = getHost() + "favorites.xml";
+  slotMakeRequest(url, QLibOA::GET, params);
+}
+
+void Core::getUserFavourites(QString screenName, QLibOA::ParamMap params)
+{
+  QString url = getHost() + "favorites/" + screenName + ".xml";
+  slotMakeRequest(url, QLibOA::GET, params);
+}
+
+void Core::getUserFavourites(int id, QLibOA::ParamMap params)
+{
+  getUserFavourites(QString::number(id), params);
+}
+
 void Core::getRateLimit()
 {
   QString url = getHost() + "account/rate_limit_status.xml";
@@ -190,6 +207,9 @@ void Core::slotReplyFinished(QNetworkReply *reply)
         qDebug() << data;
         //RespRateLimit *resp = Parser::RateLimit(data);
         //emit signalResponseReceived(resp);
+      } else if(reply->url().toString().indexOf("favorites") > -1) {
+        RespTimeline *resp = Parser::Favourites(data);
+        emit signalResponseReceived(resp);        
       }
     }
   }

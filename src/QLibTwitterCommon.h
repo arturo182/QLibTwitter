@@ -21,7 +21,8 @@ namespace QLibTwitter
     USER_TIMELINE,
     HOME_TIMELINE,
     MENTIONS,
-    RATE_LIMIT
+    RATE_LIMIT,
+    FAVOURITES
   };
 
   struct elUser
