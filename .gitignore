@@ -3,6 +3,7 @@
 /QLibTwitter.pro.user
 /tests/Makefile*
 /lib/*
+/docs/*
 /src/Makefile*
 /src/release/*
 /src/debug/*
