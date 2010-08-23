@@ -38,7 +38,9 @@ namespace QLibTwitter
     HOME_TIMELINE,
     MENTIONS,
     RATE_LIMIT,
-    FAVOURITES
+    FAVOURITES,
+    ADD_FAVOURITE,
+    REMOVE_FAVOURITE
   };
 
   struct elUser
@@ -86,7 +88,7 @@ namespace QLibTwitter
     bool isTruncated;
     qint64 inReplyToStatusId;
     qint64 inReplyToUserId;
-    bool isFavorited;
+    bool isFavourited;
     QString inReplyToScreenName;
     elUser user;
   };
@@ -102,11 +104,11 @@ namespace QLibTwitter
       RequestType m_type;
   };
 
-  class RespStatusUpdate: public Response
+  class RespStatus: public Response
   {
     public:
-      RespStatusUpdate(): Response(STATUS_UPDATE) { status = NULL; }
-      ~RespStatusUpdate() { if(status) { delete status; } }
+      RespStatus(RequestType type): Response(type) { status = NULL; }
+      ~RespStatus() { if(status) { delete status; } }
       elStatus *status;
   };
 
@@ -136,7 +138,7 @@ namespace QLibTwitter
     debug << " inReplyToScreenName =" << status.inReplyToScreenName << "\n";
     debug << " inReplyToStatusId =" << status.inReplyToStatusId << "\n";
     debug << " inReplyToUserId =" << status.inReplyToUserId << "\n";
-    debug << " isFavorited =" << status.isFavorited << "\n";
+    debug << " isFavourited =" << status.isFavourited << "\n";
     debug << " isTruncated =" << status.isTruncated << "\n";
     debug << " source =" << status.source << "\n";
     debug << " text =" << status.text << "\n";

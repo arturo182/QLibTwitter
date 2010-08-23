@@ -45,7 +45,7 @@ namespace QLibTwitter
       void getFriendsTimeline(QLibOA::ParamMap params = QLibOA::ParamMap());
       void getPublicTimeline(QLibOA::ParamMap params = QLibOA::ParamMap());
       void getUserTimeline(QString screenName, QLibOA::ParamMap params = QLibOA::ParamMap());
-      void getUserTimeline(int id, QLibOA::ParamMap params = QLibOA::ParamMap());
+      void getUserTimeline(qint64 id, QLibOA::ParamMap params = QLibOA::ParamMap());
       void getHomeTimeline(QLibOA::ParamMap params = QLibOA::ParamMap());
       void getMentions(QLibOA::ParamMap params = QLibOA::ParamMap());
       void getFavourites(QLibOA::ParamMap params = QLibOA::ParamMap());
@@ -56,6 +56,8 @@ namespace QLibTwitter
       void search(QString query, QLibOA::ParamMap params = QLibOA::ParamMap());
 
       void sendStatusUpdate(QString status, QLibOA::ParamMap params = QLibOA::ParamMap());
+      void addFavourite(qint64 id, QLibOA::ParamMap params = QLibOA::ParamMap());
+      void removeFavourite(qint64 id, QLibOA::ParamMap params = QLibOA::ParamMap());
 
     signals:
       void signalResponseReceived(QLibTwitter::Response *resp);

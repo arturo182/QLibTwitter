@@ -41,7 +41,9 @@ namespace QLibTwitter
       
       static RespRateLimit *RateLimit(QString xml);
 
-      static RespStatusUpdate *StatusUpdate(QString xml);
+      static RespStatus *StatusUpdate(QString xml);
+      static RespStatus *AddFavourite(QString xml);
+      static RespStatus *RemoveFavourite(QString xml);
 
       static QList<elStatus*> getStatusList(QString xml);
       static QString getError(QString xml);

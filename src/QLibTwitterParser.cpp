@@ -118,9 +118,23 @@ RespRateLimit *Parser::RateLimit(QString xml)
   return resp;
 }
 
-RespStatusUpdate *Parser::StatusUpdate(QString xml)
+RespStatus *Parser::StatusUpdate(QString xml)
 {
-  RespStatusUpdate *resp = new RespStatusUpdate();
+  RespStatus *resp = new RespStatus(STATUS_UPDATE);
+  resp->status = getStatusList(xml).at(0);
+  return resp;
+}
+
+RespStatus *Parser::AddFavourite(QString xml)
+{
+  RespStatus *resp = new RespStatus(ADD_FAVOURITE);
+  resp->status = getStatusList(xml).at(0);
+  return resp;
+}
+
+RespStatus *Parser::RemoveFavourite(QString xml)
+{
+  RespStatus *resp = new RespStatus(REMOVE_FAVOURITE);
   resp->status = getStatusList(xml).at(0);
   return resp;
 }
@@ -156,7 +170,7 @@ QList<elStatus*> Parser::getStatusList(QString xml)
       el->inReplyToScreenName = status.namedItem("in_reply_to_screen_name").toElement().text();
       el->inReplyToStatusId = status.namedItem("in_reply_to_status_id").toElement().text().toLongLong();
       el->inReplyToUserId = status.namedItem("in_reply_to_user_id").toElement().text().toLongLong();
-      el->isFavorited = toBool(status.namedItem("favorited").toElement().text());
+      el->isFavourited = toBool(status.namedItem("favorited").toElement().text());
       el->isTruncated = toBool(status.namedItem("truncated").toElement().text());
       el->source = status.namedItem("source").toElement().text();
       el->text = status.namedItem("text").toElement().text();

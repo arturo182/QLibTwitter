@@ -76,7 +76,7 @@ void Core::getUserTimeline(QString screenName, QLibOA::ParamMap params)
   slotMakeRequest(url, QLibOA::GET, params);
 }
 
-void Core::getUserTimeline(int id, QLibOA::ParamMap params)
+void Core::getUserTimeline(qint64 id, QLibOA::ParamMap params)
 {
   if(!params.contains("user_id")) {
     params.insert("user_id", QString::number(id));
@@ -128,6 +128,20 @@ void Core::sendStatusUpdate(QString status, QLibOA::ParamMap params)
   }
 
   QString url = getHost() + "statuses/update.xml";
+
+  slotMakeRequest(url, QLibOA::POST, params);
+}
+
+void Core::addFavourite(qint64 id, QLibOA::ParamMap params)
+{
+  QString url = getHost() + "favorites/create/" + QString::number(id) + ".xml";
+
+  slotMakeRequest(url, QLibOA::POST, params);
+}
+
+void Core::removeFavourite(qint64 id, QLibOA::ParamMap params)
+{
+  QString url = getHost() + "favorites/destroy/" + QString::number(id) + ".xml";
 
   slotMakeRequest(url, QLibOA::POST, params);
 }
@@ -197,7 +211,7 @@ void Core::slotReplyFinished(QNetworkReply *reply)
         RespTimeline *resp = Parser::FriendsTimeline(data);
         emit signalResponseReceived(resp);
       } else if(reply->url().toString().indexOf("statuses/update") > -1) {
-        RespStatusUpdate *resp = Parser::StatusUpdate(data);
+        RespStatus *resp = Parser::StatusUpdate(data);
         emit signalResponseReceived(resp);
       } else if(reply->url().toString().indexOf("statuses/public_timeline") > -1) {
         RespTimeline *resp = Parser::PublicTimeline(data);
@@ -218,6 +232,12 @@ void Core::slotReplyFinished(QNetworkReply *reply)
         qDebug() << data;
         //RespRateLimit *resp = Parser::RateLimit(data);
         //emit signalResponseReceived(resp);
+      } else if(reply->url().toString().indexOf("favorites/create") > -1) {
+        RespStatus *resp = Parser::AddFavourite(data);
+        emit signalResponseReceived(resp);
+      } else if(reply->url().toString().indexOf("favorites/destroy") > -1) {
+        RespStatus *resp = Parser::RemoveFavourite(data);
+        emit signalResponseReceived(resp);
       } else if(reply->url().toString().indexOf("favorites") > -1) {
         RespTimeline *resp = Parser::Favourites(data);
         emit signalResponseReceived(resp);        
